@@ -14,14 +14,21 @@ function setup() {
   canvas.parent("canvas-container");
   noLoop();
 
+  console.log(levelsData); // For debugging
+
+  // Convert levelsData to an array if necessary
   difficulties = Object.values(levelsData);
+
   loadLevel(currentDifficulty, currentLevelIndex);
 
-  levelLabel = document.getElementById("level-label");
-  updateLevelLabel();
+  // Use jQuery for DOM manipulation
+  $(document).ready(function () {
+    levelLabel = $("#level-label");
+    updateLevelLabel();
 
-  document.getElementById("prev-level").addEventListener("click", prevLevel);
-  document.getElementById("next-level").addEventListener("click", nextLevel);
+    $("#prev-level").click(prevLevel);
+    $("#next-level").click(nextLevel);
+  });
 }
 
 function draw() {
@@ -51,11 +58,26 @@ function draw() {
 
 function loadLevel(difficultyName, levelIndex) {
   let difficulty = difficulties.find((d) => d.name === difficultyName);
+
+  if (!difficulty) {
+    console.error(`Difficulty '${difficultyName}' not found.`);
+    return;
+  }
+
   levelData = difficulty.levels[levelIndex];
+
+  if (!levelData) {
+    console.error(
+      `Level index ${levelIndex} not found in difficulty '${difficultyName}'.`
+    );
+    return;
+  }
 }
 
 function updateLevelLabel() {
-  levelLabel.textContent = `Difficulty: ${currentDifficulty}, Level: ${levelData.level}`;
+  levelLabel.text(
+    `Difficulty: ${currentDifficulty}, Level: ${levelData.level}`
+  );
 }
 
 function prevLevel() {
