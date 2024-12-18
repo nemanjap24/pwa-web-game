@@ -6,7 +6,7 @@ let keys = {};
 
 function setup() {
   //creates canvas with dimensions of the window
-  createCanvas(windowWidth/2, windowHeight/2);
+  createCanvas(windowWidth, windowHeight);
   
   // event listeners for keyPressed and keyReleased
   window.addEventListener('keydown', handleKeyDown);
