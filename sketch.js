@@ -18,7 +18,8 @@ function draw() {
   // clear the background
   background("#9dacff");
   
-  // checks the 
+  // checks if the key is pressed 
+  // keys['w'] is accessing boolean property W
   if (keys['w'] || keys['arrowup']) {
     posY -= 5;
   }
