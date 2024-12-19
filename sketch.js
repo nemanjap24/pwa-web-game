@@ -1,6 +1,6 @@
 let levelsData;
 let levelData;
-let currentDifficulty = "easy";
+let currentDifficulty = "hard";
 let currentLevelIndex = 0;
 let difficulties;
 let levelLabel;
@@ -10,33 +10,28 @@ let orientationData = { alpha: 0, beta: 0, gamma: 0 };
 let orientationEnabled = false;
 let requestButton;
 let isMobile;
+let canvasSize = 500;
 
 function preload() {
   levelsData = loadJSON("levels.json");
 }
 
 function setup() {
-  let cnv = createCanvas(windowWidth, windowHeight);
-  canvas.parent("canvas-container");
-  cnv.style('display', 'block');
-  
+  let cnv = createCanvas(canvasSize, canvasSize);
+  cnv.parent("canvas-container");
+  cnv.style("display", "block");
+
   isMobile = checkMobile();
 
-    // Event listeners for keyboard
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
+  // Event listeners for keyboard
+  setupEventListeners();
 
-  console.log(levelsData); // For debugging
-
-
-  ball = new Ball(width/2, height/2, 100, "red");
-  
   // Create orientation request button for mobile
   if (isMobile) {
-    requestButton = createButton('Enable Device Motion');
+    requestButton = createButton("Enable Device Motion");
     requestButton.position(width / 2 - 100, height / 2);
-    requestButton.style('padding', '10px');
-    requestButton.style('font-size', '16px');
+    requestButton.style("padding", "10px");
+    requestButton.style("font-size", "16px");
     requestButton.mousePressed(requestOrientationPermission);
   }
 
@@ -58,28 +53,8 @@ function setup() {
 function draw() {
   background("#9dacff");
 
-  let map = levelData.map;
-  let tileSize = width / levelData.dimensions;
-
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      let cell = map[i][j];
-      let x = j * tileSize;
-      let y = i * tileSize;
-
-      if (cell === "w") {
-        fill("#fff");
-        rect(x, y, tileSize, tileSize);
-      } else if (cell === "s") {
-        ball.display();
-        // fill("red");
-        // circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
-      } else if (cell === "e") {
-        fill(0);
-        circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
-      }
-    }
-  }
+  renderMap();
+  // todo: maybe move the method
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
@@ -95,23 +70,49 @@ function draw() {
     ball.move(keys);
   }
 
-  // ball.display();
+  ball.display();
+}
+
+function setupEventListeners() {
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("keyup", handleKeyUp);
 }
 // Improved mobile detection
 function checkMobile() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
+function renderMap() {
+  let map = levelData.map;
+  let tileSize = width / levelData.dimensions;
+
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[i].length; j++) {
+      let cell = map[i][j];
+      let x = j * tileSize;
+      let y = i * tileSize;
+
+      if (cell === "w") {
+        fill("#fff");
+        rect(x, y, tileSize, tileSize);
+      } else if (cell === "s") {
+      } else if (cell === "e") {
+        fill(0);
+        circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
+      }
+    }
+  }
+}
 
 // Improved orientation permission request
 function requestOrientationPermission() {
   // Check for both DeviceOrientation and DeviceMotionEvent
-  if (typeof DeviceOrientationEvent !== 'undefined') {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+  if (typeof DeviceOrientationEvent !== "undefined") {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
       // iOS devices
       DeviceOrientationEvent.requestPermission()
-        .then(permissionState => {
-          if (permissionState === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation);
+        .then((permissionState) => {
+          if (permissionState === "granted") {
+            window.addEventListener("deviceorientation", handleOrientation);
             orientationEnabled = true;
           } else {
             alert("Device orientation permission denied.");
@@ -120,7 +121,7 @@ function requestOrientationPermission() {
         .catch(console.error);
     } else {
       // Android and other devices
-      window.addEventListener('deviceorientation', handleOrientation);
+      window.addEventListener("deviceorientation", handleOrientation);
       orientationEnabled = true;
     }
   } else {
@@ -134,12 +135,12 @@ function handleOrientation(event) {
   orientationData.alpha = event.alpha || 0;
   orientationData.beta = event.beta || 0;
   orientationData.gamma = event.gamma || 0;
-  
+
   // Additional logging for debugging
-  console.log('Orientation Data:', {
+  console.log("Orientation Data:", {
     alpha: orientationData.alpha,
     beta: orientationData.beta,
-    gamma: orientationData.gamma
+    gamma: orientationData.gamma,
   });
 }
 
@@ -171,17 +172,27 @@ function loadLevel(difficultyName, levelIndex) {
   levelData = difficulty.levels[levelIndex];
 
   if (!levelData) {
-    console.error(
-      `Level index ${levelIndex} not found in difficulty '${difficultyName}'.`
-    );
+    console.error(`Level index ${levelIndex} not found in difficulty '${difficultyName}'.`);
     return;
+  }
+  let spawnFound = false;
+  for (let i = 0; i < levelData.map.length; i++) {
+    for (let j = 0; j < levelData.map[i].length; j++) {
+      if (levelData.map[i][j] === "s") {
+        let tileSize = width / levelData.dimensions;
+        let x = j * tileSize + tileSize / 2;
+        let y = i * tileSize + tileSize / 2;
+        ball = new Ball(x, y, tileSize * 0.8, "red");
+        spawnFound = true;
+        break;
+      }
+    }
+    if (spawnFound) break;
   }
 }
 
 function updateLevelLabel() {
-  levelLabel.text(
-    `Difficulty: ${currentDifficulty}, Level: ${levelData.level}`
-  );
+  levelLabel.text(`Difficulty: ${currentDifficulty}, Level: ${levelData.level}`);
 }
 
 function prevLevel() {
