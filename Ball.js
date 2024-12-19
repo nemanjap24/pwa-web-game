@@ -46,8 +46,8 @@ class Ball {
     // https://yal.cc/rectangle-circle-intersection-test/
     // constrain returns the value of the first argument constrained between the second and third arguments
     // closestX and closestY are the closest points on the rectangle to the center of circle
-    let closestX = constrain(this.x, wall.x - wall.w / 2, wall.x + wall.w / 2);
-    let closestY = constrain(this.y, wall.y - wall.h / 2, wall.y + wall.h / 2);
+    let closestX = constrain(this.x, wall.centerX - wall.w / 2, wall.centerX + wall.w / 2);
+    let closestY = constrain(this.y, wall.centerY - wall.h / 2, wall.centerY + wall.h / 2);
 
     //distenca between circle and closest point on the rectangle edge
     let distanceX = this.x - closestX;
