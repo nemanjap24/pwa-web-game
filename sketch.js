@@ -56,8 +56,8 @@ function setup() {
 
 function draw() {
   background("#9dacff");
-
   let map = levelData.map;
+
   let tileSize = width / levelData.dimensions;
 
   for (let i = 0; i < map.length; i++) {
@@ -70,15 +70,13 @@ function draw() {
         fill("#fff");
         rect(x, y, tileSize, tileSize);
       } else if (cell === "s") {
-        ball.display();
-        // fill("red");
-        // circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
       } else if (cell === "e") {
         fill(0);
         circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
       }
     }
   }
+  // todo: maybe move the method
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
@@ -94,7 +92,7 @@ function draw() {
     ball.move(keys);
   }
 
-  // ball.display();
+  ball.display();
 }
 // Improved mobile detection
 function checkMobile() {
