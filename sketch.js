@@ -16,27 +16,26 @@ function preload() {
 }
 
 function setup() {
-  let cnv = createCanvas(windowWidth, windowHeight);
-  canvas.parent("canvas-container");
-  cnv.style('display', 'block');
-  
+  let cnv = createCanvas(400, 400);
+  cnv.parent("canvas-container");
+  cnv.style("display", "block");
+
   isMobile = checkMobile();
 
-    // Event listeners for keyboard
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
+  // Event listeners for keyboard
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("keyup", handleKeyUp);
 
   console.log(levelsData); // For debugging
 
+  ball = new Ball(width / 2, height / 2, 100, "red");
 
-  ball = new Ball(width/2, height/2, 100, "red");
-  
   // Create orientation request button for mobile
   if (isMobile) {
-    requestButton = createButton('Enable Device Motion');
+    requestButton = createButton("Enable Device Motion");
     requestButton.position(width / 2 - 100, height / 2);
-    requestButton.style('padding', '10px');
-    requestButton.style('font-size', '16px');
+    requestButton.style("padding", "10px");
+    requestButton.style("font-size", "16px");
     requestButton.mousePressed(requestOrientationPermission);
   }
 
@@ -99,19 +98,21 @@ function draw() {
 }
 // Improved mobile detection
 function checkMobile() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 }
 
 // Improved orientation permission request
 function requestOrientationPermission() {
   // Check for both DeviceOrientation and DeviceMotionEvent
-  if (typeof DeviceOrientationEvent !== 'undefined') {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+  if (typeof DeviceOrientationEvent !== "undefined") {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
       // iOS devices
       DeviceOrientationEvent.requestPermission()
-        .then(permissionState => {
-          if (permissionState === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation);
+        .then((permissionState) => {
+          if (permissionState === "granted") {
+            window.addEventListener("deviceorientation", handleOrientation);
             orientationEnabled = true;
           } else {
             alert("Device orientation permission denied.");
@@ -120,7 +121,7 @@ function requestOrientationPermission() {
         .catch(console.error);
     } else {
       // Android and other devices
-      window.addEventListener('deviceorientation', handleOrientation);
+      window.addEventListener("deviceorientation", handleOrientation);
       orientationEnabled = true;
     }
   } else {
@@ -134,12 +135,12 @@ function handleOrientation(event) {
   orientationData.alpha = event.alpha || 0;
   orientationData.beta = event.beta || 0;
   orientationData.gamma = event.gamma || 0;
-  
+
   // Additional logging for debugging
-  console.log('Orientation Data:', {
+  console.log("Orientation Data:", {
     alpha: orientationData.alpha,
     beta: orientationData.beta,
-    gamma: orientationData.gamma
+    gamma: orientationData.gamma,
   });
 }
 
