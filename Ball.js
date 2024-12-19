@@ -82,7 +82,7 @@ class Ball {
     circle(this.x, this.y, this.diameter);
   }
   
-  handleOrientation(beta, gamma) {
+  handleOrientation(beta, gamma, walls) {
     // Basic tilt control - you'll likely want to refine these values
     this.x += gamma * 0.5; // Adjust multiplier for sensitivity
     this.y += beta * 0.5;
