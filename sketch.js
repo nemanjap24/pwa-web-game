@@ -16,8 +16,8 @@ function preload() {
 }
 
 function setup() {
-  let cnv = createCanvas(windowWidth, windowHeight);
-  canvas.parent("canvas-container");
+  let cnv = createCanvas(400, 400);
+  cnv.parent("canvas-container");
   cnv.style('display', 'block');
   
   isMobile = checkMobile();

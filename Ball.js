@@ -38,6 +38,20 @@ class Ball {
       fill(this.color);
       circle(this.x, this.y, this.diameter);
     }
+
+    colides(object){
+      //AABB(Axis Aligned Bounding Box) colision detection
+      if(
+        this.x + this.r > wall.x - wall.w / 2 &&
+        this.x - this.r < wall.x + wall.w / 2 &&
+        this.y + this.r > wall.y - wall.h / 2 &&
+        this.y - this.r < wall.y + wall.h / 2
+      ){
+        return true;
+      } else {
+        return false;
+      }
+    }
     
     handleOrientation(beta, gamma) {
       // Basic tilt control - you'll likely want to refine these values
