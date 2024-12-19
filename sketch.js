@@ -20,7 +20,7 @@ function setup() {
   let cnv = createCanvas(canvasSize, canvasSize);
   cnv.parent("canvas-container");
   cnv.style("display", "block");
-
+  
   isMobile = checkMobile();
 
   // Event listeners for keyboard
