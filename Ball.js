@@ -33,7 +33,7 @@ class Ball {
 
     // Collision check with walls BEFORE constraining to canvas
     for (let wall of walls) {
-      console.log("wall");
+      // console.log("wall");
 
       this.handleWallCollision(wall);
     }
