@@ -32,8 +32,8 @@ class Ball {
     this.y += this.ySpeed;
 
     // Collision check with walls BEFORE constraining to canvas
-    for (let wall in walls) {
-      // console.log("wall");
+    for (let wall of walls) {
+      console.log("wall");
 
       this.handleWallCollision(wall);
     }
@@ -56,7 +56,6 @@ class Ball {
     let distanceX = this.x - closestX;
     let distanceY = this.y - closestY;
     let distanceSquared = distanceX * distanceX + distanceY * distanceY;
-
     if (distanceSquared < this.r * this.r) {
       // Collision detected!
 
