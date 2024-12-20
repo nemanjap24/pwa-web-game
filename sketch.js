@@ -12,6 +12,8 @@ let orientationEnabled = false;
 let requestButton;
 let isMobile;
 let canvasSize = 500;
+let coins = [];
+coins.push(new Coin(1, 1, 1, 1));
 
 function preload() {
   levelsData = loadJSON("levels.json");
@@ -63,7 +65,7 @@ function draw() {
       textAlign(LEFT, BASELINE);
     }
   } else {
-    ball.move(keys, walls);
+    ball.move(keys, walls, coins);
   }
 
   ball.display();

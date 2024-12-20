@@ -10,8 +10,8 @@ class Ball {
     this.speed = 5;
   }
 
-
-  move(keys, walls, coins) { // Accept an array of walls
+  move(keys, walls, coins) {
+    // Accept an array of walls
     this.xSpeed = 0;
     this.ySpeed = 0;
 
@@ -51,8 +51,8 @@ class Ball {
     // https://yal.cc/rectangle-circle-intersection-test/
     // constrain returns the value of the first argument constrained between the second and third arguments
     // closestX and closestY are the closest points on the rectangle to the center of circle
-    let closestX = constrain(this.x, wall.centerX - wall.w / 2, wall.centerX + wall.w / 2);
-    let closestY = constrain(this.y, wall.centerY - wall.h / 2, wall.centerY + wall.h / 2);
+    let closestX = constrain(this.x, wall.x - wall.w / 2, wall.x + wall.w / 2);
+    let closestY = constrain(this.y, wall.y - wall.h / 2, wall.y + wall.h / 2);
 
     //distenca between circle and closest point on the rectangle edge
     let distanceX = this.x - closestX;
@@ -89,17 +89,17 @@ class Ball {
     return 0;
   }
 
-  checkCoinCollisions(coins){
-    for (let coin of coins){
+  checkCoinCollisions(coins) {
+    for (let coin of coins) {
       let value = this.pickupCoin(coin);
 
-      if(value > 0) {
-          console.log("Coin collected!");
-          // Coin was collected
-          coins.splice(coins.indexOf(coin), 1);
-          // Optionally update score/counter here
+      if (value > 0) {
+        console.log("Coin collected!");
+        // Coin was collected
+        coins.splice(coins.indexOf(coin), 1);
+        // Optionally update score/counter here
       }
-  }
+    }
   }
 
   display() {
@@ -107,9 +107,7 @@ class Ball {
     circle(this.x, this.y, this.diameter);
   }
 
-  
   handleOrientation(beta, gamma, walls, coins) {
-
     // Basic tilt control - you'll likely want to refine these values
     this.x += gamma * 0.5; // Adjust multiplier for sensitivity
     this.y += beta * 0.5;
