@@ -10,7 +10,7 @@ class Ball {
       this.speed = 5;
   }
 
-  move(keys, walls) { // Accept an array of walls
+  move(keys, walls, coins) { // Accept an array of walls
     this.xSpeed = 0;
     this.ySpeed = 0;
 
@@ -34,6 +34,7 @@ class Ball {
     for (let wall of walls) {
         this.handleWallCollision(wall);
     }
+    this.checkCoinCollisions(coins);
     
     // Constrain to canvas bounds AFTER collision handling
     this.x = constrain(this.x, this.r, width - this.r);
@@ -75,6 +76,28 @@ class Ball {
         this.y += collisionNormalY * penetrationDepth;
 
     }
+  }
+
+  pickupCoin(coin) {
+    //calculates distance between two points (ball center and coin center)
+    let distance = dist(this.x, this.y, coin.x, coin.y);
+    if (distance < this.r + coin.diameter / 2) {
+      return coin.value;
+    }
+    return 0;
+  }
+
+  checkCoinCollisions(coins){
+    for (let coin of coins){
+      let value = this.pickupCoin(coin);
+
+      if(value > 0) {
+          console.log("Coin collected!");
+          // Coin was collected
+          coins.splice(coins.indexOf(coin), 1);
+          // Optionally update score/counter here
+      }
+  }
   }
 
   display() {
