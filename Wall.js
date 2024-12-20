@@ -13,3 +13,4 @@ class Wall {
     rect(this.x, this.y, this.w, this.h);
   }
 }
+

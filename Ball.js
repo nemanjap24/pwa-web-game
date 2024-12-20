@@ -10,8 +10,8 @@ class Ball {
     this.speed = 5;
   }
 
-  move(keys, walls) {
-    // Accept an array of walls
+
+  move(keys, walls, coins) { // Accept an array of walls
     this.xSpeed = 0;
     this.ySpeed = 0;
 
@@ -38,6 +38,8 @@ class Ball {
       this.handleWallCollision(wall);
     }
 
+    this.checkCoinCollisions(coins);
+
     // Constrain to canvas bounds AFTER collision handling
     this.x = constrain(this.x, this.r, width - this.r);
     this.y = constrain(this.y, this.r, height - this.r);
@@ -49,8 +51,8 @@ class Ball {
     // https://yal.cc/rectangle-circle-intersection-test/
     // constrain returns the value of the first argument constrained between the second and third arguments
     // closestX and closestY are the closest points on the rectangle to the center of circle
-    let closestX = constrain(this.x, wall.x - wall.w / 2, wall.x + wall.w / 2);
-    let closestY = constrain(this.y, wall.y - wall.h / 2, wall.y + wall.h / 2);
+    let closestX = constrain(this.x, wall.centerX - wall.w / 2, wall.centerX + wall.w / 2);
+    let closestY = constrain(this.y, wall.centerY - wall.h / 2, wall.centerY + wall.h / 2);
 
     //distenca between circle and closest point on the rectangle edge
     let distanceX = this.x - closestX;
@@ -78,12 +80,36 @@ class Ball {
     }
   }
 
+  pickupCoin(coin) {
+    //calculates distance between two points (ball center and coin center)
+    let distance = dist(this.x, this.y, coin.x, coin.y);
+    if (distance < this.r + coin.diameter / 2) {
+      return coin.value;
+    }
+    return 0;
+  }
+
+  checkCoinCollisions(coins){
+    for (let coin of coins){
+      let value = this.pickupCoin(coin);
+
+      if(value > 0) {
+          console.log("Coin collected!");
+          // Coin was collected
+          coins.splice(coins.indexOf(coin), 1);
+          // Optionally update score/counter here
+      }
+  }
+  }
+
   display() {
     fill(this.color);
     circle(this.x, this.y, this.diameter);
   }
 
-  handleOrientation(beta, gamma) {
+  
+  handleOrientation(beta, gamma, walls, coins) {
+
     // Basic tilt control - you'll likely want to refine these values
     this.x += gamma * 0.5; // Adjust multiplier for sensitivity
     this.y += beta * 0.5;
@@ -92,7 +118,7 @@ class Ball {
     for (let wall of walls) {
       this.handleWallCollision(wall);
     }
-
+    this.checkCoinCollisions(coins);
     // Constrain to canvas bounds AFTER collision handling
     this.x = constrain(this.x, this.r, width - this.r);
     this.y = constrain(this.y, this.r, height - this.r);
