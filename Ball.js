@@ -105,7 +105,7 @@ class Ball {
     circle(this.x, this.y, this.diameter);
   }
   
-  handleOrientation(beta, gamma, walls) {
+  handleOrientation(beta, gamma, walls, coins) {
     // Basic tilt control - you'll likely want to refine these values
     this.x += gamma * 0.5; // Adjust multiplier for sensitivity
     this.y += beta * 0.5;
@@ -114,7 +114,7 @@ class Ball {
     for (let wall of walls) {
       this.handleWallCollision(wall);
     }
-
+    this.checkCoinCollisions(coins);
     // Constrain to canvas bounds AFTER collision handling
     this.x = constrain(this.x, this.r, width - this.r);
     this.y = constrain(this.y, this.r, height - this.r);
