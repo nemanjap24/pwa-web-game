@@ -4,11 +4,12 @@ class Wall{
         this.y = y;
         this.w = w;
         this.h = h;
+        this.centerX = x + w/2;
+        this.centerY = y + h/2;
         this.color = color || "#FFFFFF"; // Default white if no color provided
     }
 
     display(){
-        rectMode(CENTER);
         fill(this.color);
         rect(this.x, this.y, this.w, this.h);
     }
