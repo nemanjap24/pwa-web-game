@@ -1,10 +1,11 @@
 let levelsData;
 let levelData;
-let currentDifficulty = "hard";
+let currentDifficulty = "easy";
 let currentLevelIndex = 0;
 let difficulties;
 let levelLabel;
 let ball;
+let walls = [];
 let keys = {};
 let orientationData = { alpha: 0, beta: 0, gamma: 0 };
 let orientationEnabled = false;
@@ -20,7 +21,7 @@ function setup() {
   let cnv = createCanvas(canvasSize, canvasSize);
   cnv.parent("canvas-container");
   cnv.style("display", "block");
-  
+
   isMobile = checkMobile();
 
   // Event listeners for keyboard
@@ -42,10 +43,6 @@ function setup() {
 
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
-    levelLabel = $("#level-label");
-    updateLevelLabel();
-
-    $("#prev-level").click(prevLevel);
     $("#next-level").click(nextLevel);
   });
 }
@@ -54,7 +51,6 @@ function draw() {
   background("#9dacff");
 
   renderMap();
-  // todo: maybe move the method
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
@@ -67,10 +63,28 @@ function draw() {
       textAlign(LEFT, BASELINE);
     }
   } else {
-    ball.move(keys);
+    ball.move(keys, walls);
   }
 
   ball.display();
+  checkFinishLine();
+}
+
+function checkFinishLine() {
+  let tileSize = width / levelData.dimensions;
+  for (let i = 0; i < levelData.map.length; i++) {
+    for (let j = 0; j < levelData.map[i].length; j++) {
+      if (levelData.map[i][j] === "e") {
+        let targetX = j * tileSize + tileSize / 2;
+        let targetY = i * tileSize + tileSize / 2;
+
+        if (dist(ball.x, ball.y, targetX, targetY) < ball.r + tileSize * 0.4) {
+          nextLevel();
+          return;
+        }
+      }
+    }
+  }
 }
 
 function setupEventListeners() {
@@ -85,17 +99,16 @@ function renderMap() {
   let map = levelData.map;
   let tileSize = width / levelData.dimensions;
 
+  for (let wall of walls) {
+    wall.display();
+  }
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
       let cell = map[i][j];
       let x = j * tileSize;
       let y = i * tileSize;
 
-      if (cell === "w") {
-        fill("#fff");
-        rect(x, y, tileSize, tileSize);
-      } else if (cell === "s") {
-      } else if (cell === "e") {
+      if (cell === "e") {
         fill(0);
         circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
       }
@@ -175,41 +188,41 @@ function loadLevel(difficultyName, levelIndex) {
     console.error(`Level index ${levelIndex} not found in difficulty '${difficultyName}'.`);
     return;
   }
-  let spawnFound = false;
-  for (let i = 0; i < levelData.map.length; i++) {
-    for (let j = 0; j < levelData.map[i].length; j++) {
+  walls = [];
+  for (let i = 0; i < levelData.dimensions; i++) {
+    for (let j = 0; j < levelData.dimensions; j++) {
+      let tileSize = width / levelData.dimensions;
+
+      let x = j * tileSize + tileSize / 2;
+      let y = i * tileSize + tileSize / 2;
       if (levelData.map[i][j] === "s") {
-        let tileSize = width / levelData.dimensions;
-        let x = j * tileSize + tileSize / 2;
-        let y = i * tileSize + tileSize / 2;
         ball = new Ball(x, y, tileSize * 0.8, "red");
         spawnFound = true;
-        break;
+      } else if (levelData.map[i][j] === "w") {
+        let wall = new Wall(x, y, tileSize, tileSize, "#fff");
+        walls.push(wall);
       }
     }
-    if (spawnFound) break;
-  }
-}
-
-function updateLevelLabel() {
-  levelLabel.text(`Difficulty: ${currentDifficulty}, Level: ${levelData.level}`);
-}
-
-function prevLevel() {
-  if (currentLevelIndex > 0) {
-    currentLevelIndex--;
-    loadLevel(currentDifficulty, currentLevelIndex);
-    updateLevelLabel();
-    redraw();
   }
 }
 
 function nextLevel() {
-  let difficulty = difficulties.find((d) => d.name === currentDifficulty);
-  if (currentLevelIndex < difficulty.levels.length - 1) {
-    currentLevelIndex++;
-    loadLevel(currentDifficulty, currentLevelIndex);
-    updateLevelLabel();
-    redraw();
+  currentLevelIndex++;
+  const difficultiesOrder = ["easy", "medium", "hard"];
+  let difficultyIndex = difficultiesOrder.indexOf(currentDifficulty);
+
+  const currentDifficultyObj = difficulties.find((d) => d.name === currentDifficulty);
+
+  if (currentLevelIndex >= currentDifficultyObj.levels.length) {
+    currentLevelIndex = 0;
+    difficultyIndex++;
+    if (difficultyIndex < difficultiesOrder.length) {
+      currentDifficulty = difficultiesOrder[difficultyIndex];
+    } else {
+      console.log("No more difficulties.");
+      return;
+    }
   }
+
+  loadLevel(currentDifficulty, currentLevelIndex);
 }
