@@ -55,7 +55,7 @@ function draw() {
   renderMap();
   if (isMobile) {
     if (orientationEnabled) {
-      ball.handleOrientation(orientationData.beta, orientationData.gamma);
+      ball.handleOrientation(orientationData.beta, orientationData.gamma, walls, coins);
       if (requestButton) requestButton.hide();
     } else {
       fill(0);
