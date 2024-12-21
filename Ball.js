@@ -108,19 +108,25 @@ class Ball {
   }
 
   handleOrientation(beta, gamma, walls, coins) {
-    // Basic tilt control - you'll likely want to refine these values
-    this.x += gamma * 0.5; // Adjust multiplier for sensitivity
-    this.y += beta * 0.5;
+    // Convert orientation data to velocities with limits
+    let maxSpeed = this.speed; // Use same speed limit as keyboard controls
+    
+    // Add velocity damping/smoothing
+    this.xSpeed = constrain(gamma * 0.2, -maxSpeed, maxSpeed); 
+    this.ySpeed = constrain(beta * 0.2, -maxSpeed, maxSpeed);  
 
-    // Collision check with walls BEFORE constraining to canvas
+    // Apply velocities
+    this.x += this.xSpeed;
+    this.y += this.ySpeed;
+
+    // Collision checks
     for (let wall of walls) {
       this.handleWallCollision(wall);
     }
     this.checkCoinCollisions(coins);
-    // Constrain to canvas bounds AFTER collision handling
+
+    // Constrain to canvas
     this.x = constrain(this.x, this.r, width - this.r);
     this.y = constrain(this.y, this.r, height - this.r);
-    // this.x = constrain(this.x, this.diameter/2, width - this.diameter/2);
-    // this.y = constrain(this.y, this.diameter/2, height - this.diameter/2);
   }
 }
