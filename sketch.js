@@ -14,7 +14,7 @@ let isMobile;
 let canvasSize = 500;
 let coins = [];
 coins.push(new Coin(1, 1, 1, 1));
-
+let obstacles = [];
 function preload() {
   levelsData = loadJSON("levels.json");
 }
@@ -107,6 +107,9 @@ function renderMap() {
   for (let coin of coins) {
     coin.display();
   }
+  for (let obstacle of obstacles) {
+    obstacle.display();
+  }
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
       let cell = map[i][j];
@@ -195,6 +198,7 @@ function loadLevel(difficultyName, levelIndex) {
   }
   walls = [];
   coins = [];
+  obstacles = [];
   for (let i = 0; i < levelData.dimensions; i++) {
     for (let j = 0; j < levelData.dimensions; j++) {
       let tileSize = width / levelData.dimensions;
@@ -210,6 +214,9 @@ function loadLevel(difficultyName, levelIndex) {
       } else if(levelData.map[i][j] === "c") {
         console.log("Coin placed");
         coins.push(new Coin(x, y, tileSize * 0.3, 10));
+      } else if(levelData.map[i][j] === "o") {
+        console.log("Obstacle placed");
+        obstacles.push(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
       }
     }
   }
