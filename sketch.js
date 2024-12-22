@@ -79,8 +79,8 @@ function checkFinishLine() {
       if (levelData.map[i][j] === "e") {
         let targetX = j * tileSize + tileSize / 2;
         let targetY = i * tileSize + tileSize / 2;
-
-        if (dist(ball.x, ball.y, targetX, targetY) < ball.r + tileSize * 0.4) {
+        // Check if ball is touching the finish line and all coins are collected
+        if (dist(ball.x, ball.y, targetX, targetY) < ball.r + tileSize * 0.4 && coins.length === 0) {
           nextLevel();
           return;
         }
@@ -103,6 +103,9 @@ function renderMap() {
 
   for (let wall of walls) {
     wall.display();
+  }
+  for (let coin of coins) {
+    coin.display();
   }
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
@@ -191,6 +194,7 @@ function loadLevel(difficultyName, levelIndex) {
     return;
   }
   walls = [];
+  coins = [];
   for (let i = 0; i < levelData.dimensions; i++) {
     for (let j = 0; j < levelData.dimensions; j++) {
       let tileSize = width / levelData.dimensions;
@@ -203,6 +207,9 @@ function loadLevel(difficultyName, levelIndex) {
       } else if (levelData.map[i][j] === "w") {
         let wall = new Wall(x, y, tileSize, tileSize, "#fff");
         walls.push(wall);
+      } else if(levelData.map[i][j] === "c") {
+        console.log("Coin placed");
+        coins.push(new Coin(x, y, tileSize * 0.3, 10));
       }
     }
   }
