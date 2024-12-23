@@ -10,7 +10,7 @@ class Ball {
     this.speed = 5;
   }
 
-  move(keys, walls, coins) {
+  move(keys, coins) {
     // Accept an array of walls
     this.xSpeed = 0;
     this.ySpeed = 0;
@@ -31,40 +31,22 @@ class Ball {
     this.x += this.xSpeed;
     this.y += this.ySpeed;
 
-    // Collision check with walls BEFORE constraining to canvas
-    for (let wall of walls) {
-      // console.log("wall");
-
-      this.handleWallCollision(wall);
-    }
-
     this.checkCoinCollisions(coins);
 
-    // Constrain to canvas bounds AFTER collision handling
+    // Constrain to canvas bounds
     this.x = constrain(this.x, this.r, width - this.r);
     this.y = constrain(this.y, this.r, height - this.r);
   }
-
-  //with help of gemini advanced 2.0
-  handleWallCollision(wall) {
-    // Circle-Rectangle Collision Detection
-    // https://yal.cc/rectangle-circle-intersection-test/
-    // constrain returns the value of the first argument constrained between the second and third arguments
-    // closestX and closestY are the closest points on the rectangle to the center of circle
-    let closestX = constrain(this.x, wall.x - wall.w / 2, wall.x + wall.w / 2);
-    let closestY = constrain(this.y, wall.y - wall.h / 2, wall.y + wall.h / 2);
-
-    //distenca between circle and closest point on the rectangle edge
-    let distanceX = this.x - closestX;
-    let distanceY = this.y - closestY;
-    let distanceSquared = distanceX * distanceX + distanceY * distanceY;
-    if (distanceSquared < this.r * this.r) {
-      // Collision detected!
-
+  //obj = object with which the ball is colliding
+  onCollision(obj, distance){
+    if(obj instanceof Wall){
+      let closestX = constrain(this.x, obj.x - obj.w / 2, obj.x + obj.w / 2);
+      let closestY = constrain(this.y, obj.y - obj.h / 2, obj.y + obj.h / 2);
+      
       // Calculate collision normal (direction from wall to circle)
       let collisionNormalX = this.x - closestX;
       let collisionNormalY = this.y - closestY;
-
+  
       // Normalize the normal vector
       let normalLength = sqrt(collisionNormalX * collisionNormalX + collisionNormalY * collisionNormalY);
       if (normalLength > 0) {
@@ -72,9 +54,9 @@ class Ball {
         collisionNormalX /= normalLength;
         collisionNormalY /= normalLength;
       }
-
-      // Separate the ball from the wall (very important)
-      let penetrationDepth = this.r - sqrt(distanceSquared);
+  
+      // Separate the this from the wall (very important)
+      let penetrationDepth = this.r - distance;
       this.x += collisionNormalX * penetrationDepth;
       this.y += collisionNormalY * penetrationDepth;
     }
@@ -107,7 +89,7 @@ class Ball {
     circle(this.x, this.y, this.diameter);
   }
 
-  handleOrientation(beta, gamma, walls, coins) {
+  handleOrientation(beta, gamma, coins) {
     // Convert orientation data to velocities with limits
     let maxSpeed = this.speed; // Use same speed limit as keyboard controls
     
@@ -119,10 +101,6 @@ class Ball {
     this.x += this.xSpeed;
     this.y += this.ySpeed;
 
-    // Collision checks
-    for (let wall of walls) {
-      this.handleWallCollision(wall);
-    }
     this.checkCoinCollisions(coins);
 
     // Constrain to canvas

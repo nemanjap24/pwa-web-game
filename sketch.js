@@ -13,6 +13,7 @@ let requestButton;
 let isMobile;
 let canvasSize = 500;
 let coins = [];
+let CD = new CollisionDetector();
 coins.push(new Coin(1, 1, 1, 1));
 let obstacles = [];
 function preload() {
@@ -68,6 +69,7 @@ function draw() {
     ball.move(keys, walls, coins);
   }
 
+  CD.checkCollisions();
   ball.display();
   checkFinishLine();
 }
@@ -197,6 +199,7 @@ function loadLevel(difficultyName, levelIndex) {
     return;
   }
   walls = [];
+  CD.clearWalls();
   coins = [];
   obstacles = [];
   for (let i = 0; i < levelData.dimensions; i++) {
@@ -207,10 +210,12 @@ function loadLevel(difficultyName, levelIndex) {
       let y = i * tileSize + tileSize / 2;
       if (levelData.map[i][j] === "s") {
         ball = new Ball(x, y, tileSize * 0.8, "red");
+        CD.setBall(ball);
         spawnFound = true;
       } else if (levelData.map[i][j] === "w") {
         let wall = new Wall(x, y, tileSize, tileSize, "#fff");
         walls.push(wall);
+        CD.addWall(wall);
       } else if(levelData.map[i][j] === "c") {
         console.log("Coin placed");
         coins.push(new Coin(x, y, tileSize * 0.3, 10));
