@@ -1,5 +1,7 @@
 class Ball {
   constructor(x, y, diameter, color) {
+    this.startX = x;
+    this.startY = y;
     this.x = x;
     this.y = y;
     this.diameter = diameter;
@@ -57,7 +59,10 @@ class Ball {
       let penetrationDepth = this.r - distance;
       this.x += collisionNormalX * penetrationDepth;
       this.y += collisionNormalY * penetrationDepth;
-    } 
+    } else if(obj instanceof Obstacle){
+      this.x = this.startX;
+      this.y = this.startY;
+    }
   }
 
   display() {

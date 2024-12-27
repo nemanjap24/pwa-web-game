@@ -5,7 +5,7 @@ class CollisionDetector{
     constructor(){
         this.walls = [];
         this.coins = [];
-        this.obsstacles = [];
+        this.obstacles = [];
         this.ball = null;
         this.finishLine = null;
     }
@@ -24,6 +24,9 @@ class CollisionDetector{
     }
     addObstacle(obstacle) { 
         this.obstacles.push(obstacle); 
+    }
+    clearObstacles(){
+        this.obstacles = [];
     }
     setBall(ball){
         this.ball = ball;
@@ -50,6 +53,9 @@ class CollisionDetector{
         }
         for(let coin of this.coins){
             this.checkCollisionCircleCircle(this.ball, coin);
+        }
+        for(let obstacle of this.obstacles){
+            this.checkCollisionCircleRect(this.ball, obstacle);
         }
     }
     checkCollisionCircleRect(circle, rect){
@@ -83,7 +89,7 @@ class CollisionDetector{
             }
         }
         // Still call onCollision for any other collision handling
-            obj1.onCollision(obj2, distance);
+        obj1.onCollision(obj2, distance);
     }
     checkCollisionCircleCircle(circle1, circle2){
         let distance = dist(circle1.x, circle1.y, circle2.x, circle2.y);

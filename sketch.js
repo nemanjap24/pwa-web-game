@@ -93,7 +93,7 @@ function renderMap() {
   for (let coin of coins) {
     coin.display();
   }
-  for (let obstacle of obstacles) {
+  for (let obstacle of CD.obstacles) {
     obstacle.display();
   }
   CD.finishLine.display();
@@ -174,7 +174,7 @@ function loadLevel(difficultyName, levelIndex) {
   walls = [];
   CD.clearWalls();
   CD.clearCoins();
-  obstacles = [];
+  CD.clearObstacles();
   for (let i = 0; i < levelData.dimensions; i++) {
     for (let j = 0; j < levelData.dimensions; j++) {
       let tileSize = width / levelData.dimensions;
@@ -194,7 +194,7 @@ function loadLevel(difficultyName, levelIndex) {
         let coin = new Coin(x, y, tileSize * 0.3, 10);
         CD.addCoin(coin);
       } else if(levelData.map[i][j] === "o") {
-        obstacles.push(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
+        CD.addObstacle(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
         console.log("Obstacle placed");
       } else if(levelData.map[i][j] === "e") {
         // finishLine = new Finish(x, y, tileSize * 0.8);
