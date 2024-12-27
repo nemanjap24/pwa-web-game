@@ -5,6 +5,7 @@ let currentLevelIndex = 0;
 let difficulties;
 let levelLabel;
 let ball;
+let finishLine;
 let walls = [];
 let keys = {};
 let orientationData = { alpha: 0, beta: 0, gamma: 0 };
@@ -112,16 +113,12 @@ function renderMap() {
   for (let obstacle of obstacles) {
     obstacle.display();
   }
+  finishLine.display();
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[i].length; j++) {
       let cell = map[i][j];
       let x = j * tileSize;
       let y = i * tileSize;
-
-      if (cell === "e") {
-        fill(0);
-        circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
-      }
     }
   }
 }
@@ -220,8 +217,11 @@ function loadLevel(difficultyName, levelIndex) {
         console.log("Coin placed");
         coins.push(new Coin(x, y, tileSize * 0.3, 10));
       } else if(levelData.map[i][j] === "o") {
-        console.log("Obstacle placed");
         obstacles.push(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
+        console.log("Obstacle placed");
+      } else if(levelData.map[i][j] === "e") {
+        finishLine = new Finish(x, y, tileSize * 0.8);
+        console.log("Finish line placed");
       }
     }
   }
