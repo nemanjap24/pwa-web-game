@@ -13,9 +13,7 @@ let orientationEnabled = false;
 let requestButton;
 let isMobile;
 let canvasSize = 500;
-let coins = [];
-let CD = new CollisionDetector();
-coins.push(new Coin(1, 1, 1, 1));
+let CD;
 let obstacles = [];
 function preload() {
   levelsData = loadJSON("levels.json");
@@ -42,7 +40,7 @@ function setup() {
 
   // Convert levelsData to an array if necessary
   difficulties = Object.values(levelsData);
-
+  CD = new CollisionDetector();
   loadLevel(currentDifficulty, currentLevelIndex);
 
   // Use jQuery for DOM manipulation
@@ -197,7 +195,7 @@ function loadLevel(difficultyName, levelIndex) {
   }
   walls = [];
   CD.clearWalls();
-  coins = [];
+  CD.clearCoins();
   obstacles = [];
   for (let i = 0; i < levelData.dimensions; i++) {
     for (let j = 0; j < levelData.dimensions; j++) {
@@ -215,7 +213,8 @@ function loadLevel(difficultyName, levelIndex) {
         CD.addWall(wall);
       } else if(levelData.map[i][j] === "c") {
         console.log("Coin placed");
-        coins.push(new Coin(x, y, tileSize * 0.3, 10));
+        let coin = new Coin(x, y, tileSize * 0.3, 10);
+        CD.addCoin(coin);
       } else if(levelData.map[i][j] === "o") {
         obstacles.push(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
         console.log("Obstacle placed");

@@ -10,7 +10,7 @@ class Ball {
     this.speed = 5;
   }
 
-  move(keys, coins) {
+  move(keys) {
     // Accept an array of walls
     this.xSpeed = 0;
     this.ySpeed = 0;
@@ -30,8 +30,6 @@ class Ball {
 
     this.x += this.xSpeed;
     this.y += this.ySpeed;
-
-    this.checkCoinCollisions(coins);
 
     // Constrain to canvas bounds
     this.x = constrain(this.x, this.r, width - this.r);
@@ -59,29 +57,7 @@ class Ball {
       let penetrationDepth = this.r - distance;
       this.x += collisionNormalX * penetrationDepth;
       this.y += collisionNormalY * penetrationDepth;
-    }
-  }
-
-  pickupCoin(coin) {
-    //calculates distance between two points (ball center and coin center)
-    let distance = dist(this.x, this.y, coin.x, coin.y);
-    if (distance < this.r + coin.diameter / 2) {
-      return coin.value;
-    }
-    return 0;
-  }
-
-  checkCoinCollisions(coins) {
-    for (let coin of coins) {
-      let value = this.pickupCoin(coin);
-
-      if (value > 0) {
-        console.log("Coin collected!");
-        // Coin was collected
-        coins.splice(coins.indexOf(coin), 1);
-        // Optionally update score/counter here
-      }
-    }
+    } 
   }
 
   display() {
@@ -89,7 +65,7 @@ class Ball {
     circle(this.x, this.y, this.diameter);
   }
 
-  handleOrientation(beta, gamma, coins) {
+  handleOrientation(beta, gamma) {
     // Convert orientation data to velocities with limits
     let maxSpeed = this.speed; // Use same speed limit as keyboard controls
     
@@ -100,8 +76,6 @@ class Ball {
     // Apply velocities
     this.x += this.xSpeed;
     this.y += this.ySpeed;
-
-    this.checkCoinCollisions(coins);
 
     // Constrain to canvas
     this.x = constrain(this.x, this.r, width - this.r);

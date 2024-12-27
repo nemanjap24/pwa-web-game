@@ -11,6 +11,10 @@ class CollisionDetector{
     addCoin(coin) { 
         this.coins.push(coin); 
     }
+    //removes all coins from the array
+    clearCoins(){
+        this.coins = [];
+    }
     addWall(wall) { 
         this.walls.push(wall); 
     }
@@ -32,6 +36,9 @@ class CollisionDetector{
         for(let wall of this.walls){
             this.checkCollisionCircleRect(this.ball, wall)
         }
+        for(let coin of this.coins){
+            this.checkCollisionCircleCircle(this.ball, coin);
+        }
     }
     checkCollisionCircleRect(circle, rect){
         //with help of gemini advanced 2.0
@@ -52,9 +59,24 @@ class CollisionDetector{
         }
     }
     //obj1 is the object that is colliding with obj2
-    handleCollision(obj1, obj2, distance){
-        if(obj2 instanceof Wall){
+    handleCollision(obj1, obj2, distance) {
+        if(obj2 instanceof Coin) {
+            // Remove the coin from the coins array
+            let index = this.coins.indexOf(obj2);
+            if(index > -1) {
+                console.log(this.coins);
+                this.coins.splice(index, 1);
+                console.log(this.coins);
+            }
+        }
+        // Still call onCollision for any other collision handling
             obj1.onCollision(obj2, distance);
+    }
+    checkCollisionCircleCircle(circle1, circle2){
+        let distance = dist(circle1.x, circle1.y, circle2.x, circle2.y);
+        if(distance < (circle1.diameter/2) + (circle2.diameter / 2)){
+            console.log("Collision circle-circle detected!");
+            this.handleCollision(circle1, circle2, distance);
         }
     }
 }
