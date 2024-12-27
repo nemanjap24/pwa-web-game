@@ -9,6 +9,7 @@ class CollisionDetector{
         this.ball = null;
         this.finishLine = null;
     }
+    //adds a coin to the array
     addCoin(coin) { 
         this.coins.push(coin); 
     }
