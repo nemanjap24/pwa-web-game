@@ -7,6 +7,7 @@ class CollisionDetector{
         this.coins = [];
         this.obsstacles = [];
         this.ball = null;
+        this.finishLine = null;
     }
     addCoin(coin) { 
         this.coins.push(coin); 
@@ -27,11 +28,22 @@ class CollisionDetector{
     setBall(ball){
         this.ball = ball;
     }
+    setFinishLine(finishLine){
+        this.finishLine = finishLine;
+    }
     checkCollisions(){
         //TODO checkCollisionCircleRect(ball, wall);
         if(this.ball === null){
             console.error("Ball not set");
             return;
+        }
+        if(this.finishLine !== null){
+            //check only if all coins are collected
+            if(this.coins.length === 0){
+                this.checkCollisionCircleCircle(this.finishLine, this.ball);
+            }
+        } else{
+            console.error("Finish line not set");
         }
         for(let wall of this.walls){
             this.checkCollisionCircleRect(this.ball, wall)
@@ -59,6 +71,7 @@ class CollisionDetector{
         }
     }
     //obj1 is the object that is colliding with obj2
+    //obj1 is the one that handles the collision meaning its onCollision method is called
     handleCollision(obj1, obj2, distance) {
         if(obj2 instanceof Coin) {
             // Remove the coin from the coins array

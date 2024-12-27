@@ -70,25 +70,10 @@ function draw() {
 
   CD.checkCollisions();
   ball.display();
-  checkFinishLine();
+
 }
 
-function checkFinishLine() {
-  let tileSize = width / levelData.dimensions;
-  for (let i = 0; i < levelData.map.length; i++) {
-    for (let j = 0; j < levelData.map[i].length; j++) {
-      if (levelData.map[i][j] === "e") {
-        let targetX = j * tileSize + tileSize / 2;
-        let targetY = i * tileSize + tileSize / 2;
-        // Check if ball is touching the finish line and all coins are collected
-        if (dist(ball.x, ball.y, targetX, targetY) < ball.r + tileSize * 0.4 && coins.length === 0) {
-          nextLevel();
-          return;
-        }
-      }
-    }
-  }
-}
+
 
 function setupEventListeners() {
   window.addEventListener("keydown", handleKeyDown);
@@ -111,14 +96,7 @@ function renderMap() {
   for (let obstacle of obstacles) {
     obstacle.display();
   }
-  finishLine.display();
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      let cell = map[i][j];
-      let x = j * tileSize;
-      let y = i * tileSize;
-    }
-  }
+  CD.finishLine.display();
 }
 
 // Improved orientation permission request
@@ -219,7 +197,8 @@ function loadLevel(difficultyName, levelIndex) {
         obstacles.push(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
         console.log("Obstacle placed");
       } else if(levelData.map[i][j] === "e") {
-        finishLine = new Finish(x, y, tileSize * 0.8);
+        // finishLine = new Finish(x, y, tileSize * 0.8);
+        CD.setFinishLine(new Finish(x, y, tileSize * 0.8, ()=> nextLevel()));
         console.log("Finish line placed");
       }
     }
