@@ -11,12 +11,23 @@ let orientationData = { alpha: 0, beta: 0, gamma: 0 };
 let orientationEnabled = false;
 let requestButton;
 let isMobile;
-let canvasSize = 500;
+let canvasSize = 400;
 let coins = [];
 coins.push(new Coin(1, 1, 1, 1));
 
 function preload() {
   levelsData = loadJSON("levels.json");
+}
+
+if ($(window).width() < 450) {
+  canvasSize = $(window).width() * 0.8;
+}
+
+// function that checks if browser supports localStorage
+if (storageAvailable("localStorage")) {
+  console.log("funguje");
+} else {
+  console.log("nefunguje");
 }
 
 function setup() {
@@ -169,12 +180,12 @@ function handleKeyUp(event) {
 }
 
 // Responsive canvas resizing
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  if (requestButton) {
-    requestButton.position(width / 2 - 100, height / 2);
-  }
-}
+// function windowResized() {
+//   resizeCanvas(windowWidth, windowHeight);
+//   if (requestButton) {
+//     requestButton.position(width / 2 - 100, height / 2);
+//   }
+// }
 
 function loadLevel(difficultyName, levelIndex) {
   let difficulty = difficulties.find((d) => d.name === difficultyName);
