@@ -5,16 +5,15 @@ let currentLevelIndex = 0;
 let difficulties;
 let levelLabel;
 let ball;
-let walls = [];
 let keys = {};
 let orientationData = { alpha: 0, beta: 0, gamma: 0 };
 let orientationEnabled = false;
 let requestButton;
 let isMobile;
-let canvasSize = 400;
 let coins = [];
 coins.push(new Coin(1, 1, 1, 1));
-
+let canvasSize = 500;
+let CD;
 function preload() {
   levelsData = loadJSON("levels.json");
 }
@@ -51,7 +50,7 @@ function setup() {
 
   // Convert levelsData to an array if necessary
   difficulties = Object.values(levelsData);
-
+  CD = new CollisionDetector();
   loadLevel(currentDifficulty, currentLevelIndex);
 
   // Use jQuery for DOM manipulation
@@ -66,7 +65,7 @@ function draw() {
   renderMap();
   if (isMobile) {
     if (orientationEnabled) {
-      ball.handleOrientation(orientationData.beta, orientationData.gamma, walls, coins);
+      ball.handleOrientation(orientationData.beta, orientationData.gamma);
       if (requestButton) requestButton.hide();
     } else {
       fill(0);
@@ -76,28 +75,11 @@ function draw() {
       textAlign(LEFT, BASELINE);
     }
   } else {
-    ball.move(keys, walls, coins);
+    ball.move(keys);
   }
 
+  CD.checkCollisions();
   ball.display();
-  checkFinishLine();
-}
-
-function checkFinishLine() {
-  let tileSize = width / levelData.dimensions;
-  for (let i = 0; i < levelData.map.length; i++) {
-    for (let j = 0; j < levelData.map[i].length; j++) {
-      if (levelData.map[i][j] === "e") {
-        let targetX = j * tileSize + tileSize / 2;
-        let targetY = i * tileSize + tileSize / 2;
-
-        if (dist(ball.x, ball.y, targetX, targetY) < ball.r + tileSize * 0.4) {
-          nextLevel();
-          return;
-        }
-      }
-    }
-  }
 }
 
 function setupEventListeners() {
@@ -109,24 +91,16 @@ function checkMobile() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 function renderMap() {
-  let map = levelData.map;
-  let tileSize = width / levelData.dimensions;
-
-  for (let wall of walls) {
+  for (let wall of CD.walls) {
     wall.display();
   }
-  for (let i = 0; i < map.length; i++) {
-    for (let j = 0; j < map[i].length; j++) {
-      let cell = map[i][j];
-      let x = j * tileSize;
-      let y = i * tileSize;
-
-      if (cell === "e") {
-        fill(0);
-        circle(x + tileSize / 2, y + tileSize / 2, tileSize * 0.8);
-      }
-    }
+  for (let coin of CD.coins) {
+    coin.display();
   }
+  for (let obstacle of CD.obstacles) {
+    obstacle.display();
+  }
+  CD.finishLine.display();
 }
 
 // Improved orientation permission request
@@ -201,7 +175,9 @@ function loadLevel(difficultyName, levelIndex) {
     console.error(`Level index ${levelIndex} not found in difficulty '${difficultyName}'.`);
     return;
   }
-  walls = [];
+  CD.clearWalls();
+  CD.clearCoins();
+  CD.clearObstacles();
   for (let i = 0; i < levelData.dimensions; i++) {
     for (let j = 0; j < levelData.dimensions; j++) {
       let tileSize = width / levelData.dimensions;
@@ -210,10 +186,22 @@ function loadLevel(difficultyName, levelIndex) {
       let y = i * tileSize + tileSize / 2;
       if (levelData.map[i][j] === "s") {
         ball = new Ball(x, y, tileSize * 0.8, "red");
+        CD.setBall(ball);
         spawnFound = true;
       } else if (levelData.map[i][j] === "w") {
         let wall = new Wall(x, y, tileSize, tileSize, "#fff");
-        walls.push(wall);
+        CD.addWall(wall);
+      } else if (levelData.map[i][j] === "c") {
+        console.log("Coin placed");
+        let coin = new Coin(x, y, tileSize * 0.3, 10);
+        CD.addCoin(coin);
+      } else if (levelData.map[i][j] === "o") {
+        CD.addObstacle(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
+        console.log("Obstacle placed");
+      } else if (levelData.map[i][j] === "e") {
+        // finishLine = new Finish(x, y, tileSize * 0.8);
+        CD.setFinishLine(new Finish(x, y, tileSize * 0.8, () => nextLevel()));
+        console.log("Finish line placed");
       }
     }
   }
