@@ -14,7 +14,7 @@ let coins = [];
 let canvasSize = 500;
 let CD;
 
-// todo: will pull from localstorage
+// todo: remove uneccessary code
 let unlockedDifficulties = ["easy"];
 // Track completed levels per difficulty
 let levelsCompleted = {
@@ -49,6 +49,7 @@ function setup() {
   let cnv = createCanvas(canvasSize, canvasSize);
   cnv.parent("canvas-container");
   cnv.style("display", "block");
+  loadUserData();
 
   isMobile = checkMobile();
 
@@ -65,13 +66,10 @@ function setup() {
     });
   }
 
-  // Convert levelsData to an array if necessary
   difficulties = Object.values(levelsData);
   CD = new CollisionDetector();
-  loadLevel(currentDifficulty, currentLevelIndex);
-  usedLevelIndexes[currentDifficulty].add(currentLevelIndex);
-  currentLevelIndexMap[currentDifficulty] = currentLevelIndex;
-  levelInProgress[currentDifficulty] = true;
+
+  loadOrInitializeLevel(currentDifficulty);
 
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
@@ -217,6 +215,7 @@ function loadLevel(difficultyName, levelIndex) {
       }
     }
   }
+  saveUserData();
 }
 
 function nextLevel() {
@@ -302,3 +301,45 @@ $(document).ready(function () {
     }
   });
 });
+function loadUserData() {
+  try {
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
+    if (savedData) {
+      unlockedDifficulties = savedData.unlockedDifficulties || ["easy"];
+      levelsCompleted = savedData.levelsCompleted || { easy: 0, medium: 0, hard: 0 };
+
+      // Convert arrays back to Sets
+      if (savedData.usedLevelIndexes) {
+        usedLevelIndexes.easy = new Set(savedData.usedLevelIndexes.easy || []);
+        usedLevelIndexes.medium = new Set(savedData.usedLevelIndexes.medium || []);
+        usedLevelIndexes.hard = new Set(savedData.usedLevelIndexes.hard || []);
+      }
+      currentDifficulty = savedData.currentDifficulty || "easy";
+      currentLevelIndexMap = savedData.currentLevelIndexMap || { easy: null, medium: null, hard: null };
+      levelInProgress = savedData.levelInProgress || { easy: false, medium: false, hard: false };
+    }
+  } catch (e) {
+    console.warn("Could not parse localStorage data", e);
+  }
+}
+
+function saveUserData() {
+  try {
+    const dataToSave = {
+      unlockedDifficulties: unlockedDifficulties,
+      levelsCompleted: levelsCompleted,
+      usedLevelIndexes: {
+        easy: Array.from(usedLevelIndexes.easy),
+        medium: Array.from(usedLevelIndexes.medium),
+        hard: Array.from(usedLevelIndexes.hard),
+      },
+      currentLevelIndexMap: currentLevelIndexMap,
+      levelInProgress: levelInProgress,
+      currentDifficulty: currentDifficulty,
+      currentLevelIndex: currentLevelIndex,
+    };
+    localStorage.setItem("gameData", JSON.stringify(dataToSave));
+  } catch (e) {
+    console.warn("Could not save to localStorage", e);
+  }
+}
