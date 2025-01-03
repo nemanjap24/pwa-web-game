@@ -45,9 +45,7 @@ function setup() {
     
     $("#enable-orientation").click(function() {
       requestOrientationPermission();
-      if (orientationEnabled) {
-        $("#orientation-overlay").css("display", "none");
-      }
+      $("#orientation-overlay").css("display", "none");
     });
   }
 
