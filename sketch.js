@@ -41,11 +41,14 @@ function setup() {
 
   // Create orientation request button for mobile
   if (isMobile) {
-    requestButton = createButton("Enable Device Motion");
-    requestButton.position(width / 2 - 100, height / 2);
-    requestButton.style("padding", "10px");
-    requestButton.style("font-size", "16px");
-    requestButton.mousePressed(requestOrientationPermission);
+    $("#orientation-overlay").css("display", "flex");
+    
+    $("#enable-orientation").click(function() {
+      requestOrientationPermission();
+      if (orientationEnabled) {
+        $("#orientation-overlay").css("display", "none");
+      }
+    });
   }
 
   // Convert levelsData to an array if necessary
@@ -73,14 +76,7 @@ function draw() {
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
-      if (requestButton) requestButton.hide();
-    } else {
-      fill(0);
-      textSize(20);
-      textAlign(CENTER, CENTER);
-      text("Tap 'Enable Device Motion' to start", width / 2, height / 3);
-      textAlign(LEFT, BASELINE);
-    }
+    } 
   } else {
     ball.move(keys);
   }

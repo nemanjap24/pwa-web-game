@@ -43,6 +43,9 @@ canvas{
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
 }
+#orientation-overlay {
+  z-index: 1001; /* Higher than help overlay */
+}
 
 .overlay-content {
   background-color: white;
