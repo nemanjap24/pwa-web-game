@@ -18,15 +18,11 @@ function preload() {
   levelsData = loadJSON("levels.json");
 }
 
-if ($(window).width() < 450) {
+if ($(window).width() < canvasSize) {
   canvasSize = $(window).width() * 0.8;
 }
-
-// function that checks if browser supports localStorage
-if (storageAvailable("localStorage")) {
-  console.log("funguje");
-} else {
-  console.log("nefunguje");
+if ($(window).height() < canvasSize) {
+  canvasSize = $(window).height() * 0.7;
 }
 
 function setup() {
