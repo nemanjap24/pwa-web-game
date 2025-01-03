@@ -11,7 +11,6 @@ let orientationEnabled = false;
 let requestButton;
 let isMobile;
 let coins = [];
-coins.push(new Coin(1, 1, 1, 1));
 let canvasSize = 500;
 let CD;
 function preload() {
@@ -38,8 +37,8 @@ function setup() {
   // Create orientation request button for mobile
   if (isMobile) {
     $("#orientation-overlay").css("display", "flex");
-    
-    $("#enable-orientation").click(function() {
+
+    $("#enable-orientation").click(function () {
       requestOrientationPermission();
       $("#orientation-overlay").css("display", "none");
     });
@@ -53,11 +52,11 @@ function setup() {
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
     $("#next-level").click(nextLevel);
-    $("#help-button").click(function() {
+    $("#help-button").click(function () {
       $("#help-overlay").css("display", "flex");
     });
-  
-    $("#close-help").click(function() {
+
+    $("#close-help").click(function () {
       $("#help-overlay").css("display", "none");
     });
   });
@@ -70,7 +69,7 @@ function draw() {
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
-    } 
+    }
   } else {
     ball.move(keys);
   }
@@ -149,14 +148,6 @@ function handleKeyDown(event) {
 function handleKeyUp(event) {
   keys[event.key.toLowerCase()] = false;
 }
-
-// Responsive canvas resizing
-// function windowResized() {
-//   resizeCanvas(windowWidth, windowHeight);
-//   if (requestButton) {
-//     requestButton.position(width / 2 - 100, height / 2);
-//   }
-// }
 
 function loadLevel(difficultyName, levelIndex) {
   let difficulty = difficulties.find((d) => d.name === difficultyName);
