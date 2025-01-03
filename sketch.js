@@ -22,6 +22,15 @@ let levelsCompleted = {
   medium: 0,
   hard: 0,
 };
+let usedLevelIndexes = {
+  easy: new Set(),
+  medium: new Set(),
+  hard: new Set(),
+};
+// Keep track of the current level index for each difficulty
+let currentLevelIndexMap = { easy: null, medium: null, hard: null };
+// Track whether a level is in progress for each difficulty
+let levelInProgress = { easy: false, medium: false, hard: false };
 
 // end of localStorage
 
@@ -60,6 +69,9 @@ function setup() {
   difficulties = Object.values(levelsData);
   CD = new CollisionDetector();
   loadLevel(currentDifficulty, currentLevelIndex);
+  usedLevelIndexes[currentDifficulty].add(currentLevelIndex);
+  currentLevelIndexMap[currentDifficulty] = currentLevelIndex;
+  levelInProgress[currentDifficulty] = true;
 
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
@@ -211,7 +223,10 @@ function nextLevel() {
   // Current difficulty completed one level
   levelsCompleted[currentDifficulty]++;
 
-  // Check if we should unlock next difficulty
+  // Mark current difficulty’s level as done
+  levelInProgress[currentDifficulty] = false;
+
+  // Unlock next difficulty if 3 levels done
   if (levelsCompleted[currentDifficulty] >= 3) {
     if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
       unlockedDifficulties.push("medium");
@@ -223,36 +238,67 @@ function nextLevel() {
   // Load next random level in the current difficulty
   loadRandomLevel(currentDifficulty);
 }
+function loadOrInitializeLevel(difficultyName) {
+  if (currentLevelIndexMap[difficultyName] !== null) {
+    // A level has already been chosen for this difficulty, load it
+    loadLevel(difficultyName, currentLevelIndexMap[difficultyName]);
+  } else {
+    // No level chosen yet, so initialize
+    loadRandomLevel(difficultyName);
+  }
+}
 
 function loadRandomLevel(difficultyName) {
-  // Get the difficulty object
-  let difficultyObj = difficulties.find((d) => d.name === difficultyName);
+  const difficultyObj = difficulties.find((d) => d.name === difficultyName);
   if (!difficultyObj) return;
 
-  // Pick a random level index
-  let randomIndex = floor(random(difficultyObj.levels.length));
+  let availableIndexes = [];
+  for (let i = 0; i < difficultyObj.levels.length; i++) {
+    if (!usedLevelIndexes[difficultyName].has(i)) {
+      availableIndexes.push(i);
+    }
+  }
+  // todo: remove after, used for debugging
+  console.log(availableIndexes);
 
-  // Load that level
-  loadLevel(difficultyName, randomIndex);
+  // If all levels used, reset
+  if (availableIndexes.length === 0) {
+    usedLevelIndexes[difficultyName].clear();
+    for (let i = 0; i < difficultyObj.levels.length; i++) {
+      availableIndexes.push(i);
+    }
+  }
+
+  // Pick a random unused level index
+  const randomIndex = floor(random(availableIndexes.length));
+  const chosenIndex = availableIndexes[randomIndex];
+  usedLevelIndexes[difficultyName].add(chosenIndex);
+
+  // Record that index as the current level for this difficulty
+  currentLevelIndexMap[difficultyName] = chosenIndex;
+  levelInProgress[difficultyName] = true;
+
+  // Load the chosen level
+  loadLevel(difficultyName, chosenIndex);
 }
 
 $(document).ready(function () {
   $("#btn-easy").click(function () {
     if (unlockedDifficulties.includes("easy")) {
       currentDifficulty = "easy";
-      loadRandomLevel("easy");
+      loadOrInitializeLevel("easy");
     }
   });
   $("#btn-medium").click(function () {
     if (unlockedDifficulties.includes("medium")) {
       currentDifficulty = "medium";
-      loadRandomLevel("medium");
+      loadOrInitializeLevel("medium");
     }
   });
   $("#btn-hard").click(function () {
     if (unlockedDifficulties.includes("hard")) {
       currentDifficulty = "hard";
-      loadRandomLevel("hard");
+      loadOrInitializeLevel("hard");
     }
   });
 });
