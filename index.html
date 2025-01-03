@@ -8,7 +8,7 @@
     <title>Sketch</title>
 
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
@@ -16,16 +16,25 @@
   </head>
 
   <body>
-    <div id="canvas-container"></div>
-    <div id="controls">
-      <button id="next-level">Next Level</button>
-      <button id="help-button">Help <i class="fa-solid fa-question"></i></button>
+    <div id="main-container">
+      <div id="canvas-container">
+        <div id="controls">
+          <button id="next-level">Next Level</button>
+          <button id="help-button">Help <i class="fa-solid fa-question"></i></button>
+        </div>
+      </div>
+      <div id="difficulty-container">
+        <button id="btn-easy">Easy</button>
+        <button id="btn-medium">Medium</button>
+        <button id="btn-hard">Hard</button>
+      </div>
     </div>
+
     <div id="orientation-overlay" class="overlay">
       <div class="overlay-content">
         <h2>Device orientation data access required</h2>
         <p>This game requires device orientation access to play on mobile devices.</p>
-        <button id="enable-orientation" >Enable Device Motion</button>
+        <button id="enable-orientation">Enable Device Motion</button>
       </div>
     </div>
     <div id="help-overlay" class="overlay">
@@ -42,7 +51,7 @@
     <script src="Finish.js"></script>
     <script src="Wall.js"></script>
     <script src="Obstacle.js"></script>
-    <script src="Coin.js" ></script>
+    <script src="Coin.js"></script>
     <script src="Ball.js"></script>
     <script src="sketch.js"></script>
   </body>
