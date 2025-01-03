@@ -8,6 +8,7 @@
     <title>Sketch</title>
 
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
@@ -18,7 +19,18 @@
     <div id="canvas-container"></div>
     <div id="controls">
       <button id="next-level">Next Level</button>
+      <button id="help-button">Help <i class="fa-solid fa-question"></i></button>
     </div>
+    <div id="help-overlay" class="overlay">
+      <div class="overlay-content">
+        <h2>How to Play</h2>
+        <p>Tilt your device or use WASD to move the <span class="ball">ball</span></p>
+        <p>Collect all coins 🪙 before reaching the finish line (black circle).</p>
+        <p>Avoid <span class="obstacle">obstacles</span>(blue squares) - they will reset your position</p>
+        <button id="close-help">Close</button>
+      </div>
+    </div>
+
     <script src="CollisionDetector.js"></script>
     <script src="Finish.js"></script>
     <script src="Wall.js"></script>

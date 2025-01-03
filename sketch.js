@@ -56,6 +56,13 @@ function setup() {
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
     $("#next-level").click(nextLevel);
+    $("#help-button").click(function() {
+      $("#help-overlay").css("display", "flex");
+    });
+  
+    $("#close-help").click(function() {
+      $("#help-overlay").css("display", "none");
+    });
   });
 }
 
