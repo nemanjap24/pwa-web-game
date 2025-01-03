@@ -13,6 +13,18 @@ let isMobile;
 let coins = [];
 let canvasSize = 500;
 let CD;
+
+// todo: will pull from localstorage
+let unlockedDifficulties = ["easy"];
+// Track completed levels per difficulty
+let levelsCompleted = {
+  easy: 0,
+  medium: 0,
+  hard: 0,
+};
+
+// end of localStorage
+
 function preload() {
   levelsData = loadJSON("levels.json");
 }
@@ -196,22 +208,51 @@ function loadLevel(difficultyName, levelIndex) {
 }
 
 function nextLevel() {
-  currentLevelIndex++;
-  const difficultiesOrder = ["easy", "medium", "hard"];
-  let difficultyIndex = difficultiesOrder.indexOf(currentDifficulty);
+  // Current difficulty completed one level
+  levelsCompleted[currentDifficulty]++;
 
-  const currentDifficultyObj = difficulties.find((d) => d.name === currentDifficulty);
-
-  if (currentLevelIndex >= currentDifficultyObj.levels.length) {
-    currentLevelIndex = 0;
-    difficultyIndex++;
-    if (difficultyIndex < difficultiesOrder.length) {
-      currentDifficulty = difficultiesOrder[difficultyIndex];
-    } else {
-      console.log("No more difficulties.");
-      return;
+  // Check if we should unlock next difficulty
+  if (levelsCompleted[currentDifficulty] >= 3) {
+    if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
+      unlockedDifficulties.push("medium");
+    } else if (currentDifficulty === "medium" && !unlockedDifficulties.includes("hard")) {
+      unlockedDifficulties.push("hard");
     }
   }
 
-  loadLevel(currentDifficulty, currentLevelIndex);
+  // Load next random level in the current difficulty
+  loadRandomLevel(currentDifficulty);
 }
+
+function loadRandomLevel(difficultyName) {
+  // Get the difficulty object
+  let difficultyObj = difficulties.find((d) => d.name === difficultyName);
+  if (!difficultyObj) return;
+
+  // Pick a random level index
+  let randomIndex = floor(random(difficultyObj.levels.length));
+
+  // Load that level
+  loadLevel(difficultyName, randomIndex);
+}
+
+$(document).ready(function () {
+  $("#btn-easy").click(function () {
+    if (unlockedDifficulties.includes("easy")) {
+      currentDifficulty = "easy";
+      loadRandomLevel("easy");
+    }
+  });
+  $("#btn-medium").click(function () {
+    if (unlockedDifficulties.includes("medium")) {
+      currentDifficulty = "medium";
+      loadRandomLevel("medium");
+    }
+  });
+  $("#btn-hard").click(function () {
+    if (unlockedDifficulties.includes("hard")) {
+      currentDifficulty = "hard";
+      loadRandomLevel("hard");
+    }
+  });
+});
