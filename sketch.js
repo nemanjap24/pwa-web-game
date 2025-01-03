@@ -62,10 +62,14 @@ function setup() {
     $("#next-level").click(nextLevel);
     $("#help-button").click(function() {
       $("#help-overlay").css("display", "flex");
+      // Pause the game
+      noLoop();
     });
   
     $("#close-help").click(function() {
       $("#help-overlay").css("display", "none");
+      // Resume the game
+      loop();
     });
   });
 }
