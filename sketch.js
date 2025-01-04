@@ -43,6 +43,9 @@ function setup() {
       requestOrientationPermission();
       $("#orientation-overlay").css("display", "none");
     });
+    // Add orientation change listener
+    window.addEventListener("orientationchange", checkOrientation);
+    checkOrientation(); // Check initial orientation
   }
 
   // Convert levelsData to an array if necessary
@@ -55,10 +58,14 @@ function setup() {
     $("#next-level").click(nextLevel);
     $("#help-button").click(function() {
       $("#help-overlay").css("display", "flex");
+      // Pause the game
+      noLoop();
     });
   
     $("#close-help").click(function() {
       $("#help-overlay").css("display", "none");
+      // Resume the game
+      loop();
     });
   });
 }
@@ -157,6 +164,20 @@ function handleKeyUp(event) {
 //     requestButton.position(width / 2 - 100, height / 2);
 //   }
 // }
+function checkOrientation() {
+  const isPortrait = window.screen.orientation.type.includes('portrait');
+  if (isMobile) {
+    if (!isPortrait) {
+      $("#rotate-overlay").css("display", "flex");
+      // Pause the game
+      noLoop();
+    } else {
+      $("#rotate-overlay").css("display", "none");
+      // Resume the game
+      loop();
+    }
+  }
+}
 
 function loadLevel(difficultyName, levelIndex) {
   let difficulty = difficulties.find((d) => d.name === difficultyName);
