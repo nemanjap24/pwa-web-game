@@ -11,9 +11,29 @@ let orientationEnabled = false;
 let requestButton;
 let isMobile;
 let coins = [];
-coins.push(new Coin(1, 1, 1, 1));
 let canvasSize = 500;
 let CD;
+
+// todo: remove uneccessary code
+let unlockedDifficulties = ["easy"];
+// Track completed levels per difficulty
+let levelsCompleted = {
+  easy: 0,
+  medium: 0,
+  hard: 0,
+};
+let usedLevelIndexes = {
+  easy: new Set(),
+  medium: new Set(),
+  hard: new Set(),
+};
+// Keep track of the current level index for each difficulty
+let currentLevelIndexMap = { easy: null, medium: null, hard: null };
+// Track whether a level is in progress for each difficulty
+let levelInProgress = { easy: false, medium: false, hard: false };
+
+// end of localStorage
+
 function preload() {
   levelsData = loadJSON("levels.json");
 }
@@ -29,6 +49,7 @@ function setup() {
   let cnv = createCanvas(canvasSize, canvasSize);
   cnv.parent("canvas-container");
   cnv.style("display", "block");
+  loadUserData();
 
   isMobile = checkMobile();
 
@@ -38,8 +59,8 @@ function setup() {
   // Create orientation request button for mobile
   if (isMobile) {
     $("#orientation-overlay").css("display", "flex");
-    
-    $("#enable-orientation").click(function() {
+
+    $("#enable-orientation").click(function () {
       requestOrientationPermission();
       $("#orientation-overlay").css("display", "none");
     });
@@ -48,21 +69,21 @@ function setup() {
     checkOrientation(); // Check initial orientation
   }
 
-  // Convert levelsData to an array if necessary
   difficulties = Object.values(levelsData);
   CD = new CollisionDetector();
-  loadLevel(currentDifficulty, currentLevelIndex);
+
+  loadOrInitializeLevel(currentDifficulty);
 
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
     $("#next-level").click(nextLevel);
-    $("#help-button").click(function() {
+    $("#help-button").click(function () {
       $("#help-overlay").css("display", "flex");
       // Pause the game
       noLoop();
     });
-  
-    $("#close-help").click(function() {
+
+    $("#close-help").click(function () {
       $("#help-overlay").css("display", "none");
       // Resume the game
       loop();
@@ -77,7 +98,7 @@ function draw() {
   if (isMobile) {
     if (orientationEnabled) {
       ball.handleOrientation(orientationData.beta, orientationData.gamma);
-    } 
+    }
   } else {
     ball.move(keys);
   }
@@ -223,25 +244,131 @@ function loadLevel(difficultyName, levelIndex) {
       }
     }
   }
+  saveUserData();
 }
 
 function nextLevel() {
-  currentLevelIndex++;
-  const difficultiesOrder = ["easy", "medium", "hard"];
-  let difficultyIndex = difficultiesOrder.indexOf(currentDifficulty);
+  // Current difficulty completed one level
+  levelsCompleted[currentDifficulty]++;
 
-  const currentDifficultyObj = difficulties.find((d) => d.name === currentDifficulty);
+  // Mark current difficulty’s level as done
+  levelInProgress[currentDifficulty] = false;
 
-  if (currentLevelIndex >= currentDifficultyObj.levels.length) {
-    currentLevelIndex = 0;
-    difficultyIndex++;
-    if (difficultyIndex < difficultiesOrder.length) {
-      currentDifficulty = difficultiesOrder[difficultyIndex];
-    } else {
-      console.log("No more difficulties.");
-      return;
+  // Unlock next difficulty if 3 levels done
+  if (levelsCompleted[currentDifficulty] >= 3) {
+    if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
+      unlockedDifficulties.push("medium");
+    } else if (currentDifficulty === "medium" && !unlockedDifficulties.includes("hard")) {
+      unlockedDifficulties.push("hard");
     }
   }
 
-  loadLevel(currentDifficulty, currentLevelIndex);
+  // Load next random level in the current difficulty
+  loadRandomLevel(currentDifficulty);
+}
+function loadOrInitializeLevel(difficultyName) {
+  if (currentLevelIndexMap[difficultyName] !== null) {
+    // A level has already been chosen for this difficulty, load it
+    loadLevel(difficultyName, currentLevelIndexMap[difficultyName]);
+  } else {
+    // No level chosen yet, so initialize
+    loadRandomLevel(difficultyName);
+  }
+}
+
+function loadRandomLevel(difficultyName) {
+  const difficultyObj = difficulties.find((d) => d.name === difficultyName);
+  if (!difficultyObj) return;
+
+  let availableIndexes = [];
+  for (let i = 0; i < difficultyObj.levels.length; i++) {
+    if (!usedLevelIndexes[difficultyName].has(i)) {
+      availableIndexes.push(i);
+    }
+  }
+  // todo: remove after, used for debugging
+  console.log(availableIndexes);
+
+  // If all levels used, reset
+  if (availableIndexes.length === 0) {
+    usedLevelIndexes[difficultyName].clear();
+    for (let i = 0; i < difficultyObj.levels.length; i++) {
+      availableIndexes.push(i);
+    }
+  }
+
+  // Pick a random unused level index
+  const randomIndex = floor(random(availableIndexes.length));
+  const chosenIndex = availableIndexes[randomIndex];
+  usedLevelIndexes[difficultyName].add(chosenIndex);
+
+  // Record that index as the current level for this difficulty
+  currentLevelIndexMap[difficultyName] = chosenIndex;
+  levelInProgress[difficultyName] = true;
+
+  // Load the chosen level
+  loadLevel(difficultyName, chosenIndex);
+}
+
+$(document).ready(function () {
+  $("#btn-easy").click(function () {
+    if (unlockedDifficulties.includes("easy")) {
+      currentDifficulty = "easy";
+      loadOrInitializeLevel("easy");
+    }
+  });
+  $("#btn-medium").click(function () {
+    if (unlockedDifficulties.includes("medium")) {
+      currentDifficulty = "medium";
+      loadOrInitializeLevel("medium");
+    }
+  });
+  $("#btn-hard").click(function () {
+    if (unlockedDifficulties.includes("hard")) {
+      currentDifficulty = "hard";
+      loadOrInitializeLevel("hard");
+    }
+  });
+});
+function loadUserData() {
+  try {
+    const savedData = JSON.parse(localStorage.getItem("gameData"));
+    if (savedData) {
+      unlockedDifficulties = savedData.unlockedDifficulties || ["easy"];
+      levelsCompleted = savedData.levelsCompleted || { easy: 0, medium: 0, hard: 0 };
+
+      // Convert arrays back to Sets
+      if (savedData.usedLevelIndexes) {
+        usedLevelIndexes.easy = new Set(savedData.usedLevelIndexes.easy || []);
+        usedLevelIndexes.medium = new Set(savedData.usedLevelIndexes.medium || []);
+        usedLevelIndexes.hard = new Set(savedData.usedLevelIndexes.hard || []);
+      }
+      currentDifficulty = savedData.currentDifficulty || "easy";
+      currentLevelIndexMap = savedData.currentLevelIndexMap || { easy: null, medium: null, hard: null };
+      levelInProgress = savedData.levelInProgress || { easy: false, medium: false, hard: false };
+    }
+  } catch (e) {
+    console.warn("Could not parse localStorage data", e);
+  }
+}
+
+function saveUserData() {
+  try {
+    const dataToSave = {
+      unlockedDifficulties: unlockedDifficulties,
+      levelsCompleted: levelsCompleted,
+      usedLevelIndexes: {
+        easy: Array.from(usedLevelIndexes.easy),
+        medium: Array.from(usedLevelIndexes.medium),
+        hard: Array.from(usedLevelIndexes.hard),
+      },
+      currentLevelIndexMap: currentLevelIndexMap,
+      levelInProgress: levelInProgress,
+      currentDifficulty: currentDifficulty,
+      currentLevelIndex: currentLevelIndex,
+    };
+    localStorage.setItem("gameData", JSON.stringify(dataToSave));
+  } catch (e) {
+    console.warn("Could not save to localStorage", e);
+  }
 }
