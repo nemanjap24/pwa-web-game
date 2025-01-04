@@ -5,7 +5,20 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Sketch</title>
+     <!-- Add these new meta tags -->
+     <meta name="theme-color" content="#4c5eb3"/>
+     <meta name="description" content="A ball rolling puzzle game">
+     
+     <!-- Add manifest link -->
+     <link rel="manifest" href="manifest.json">
+     
+     <!-- Add iOS meta tags and icons -->
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+     <meta name="apple-mobile-web-app-title" content="Ball Game">
+     <link rel="apple-touch-icon" href="icons/icon_152x152.png">
+
+    <title>Baller</title>
 
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -54,11 +67,25 @@
       </div>
     </div>
     <script src="CollisionDetector.js"></script>
-    <script src="Finish.js"></script>
-    <script src="Wall.js"></script>
-    <script src="Obstacle.js"></script>
-    <script src="Coin.js"></script>
-    <script src="Ball.js"></script>
+    <script src="GameObjects/Finish.js"></script>
+    <script src="GameObjects/Wall.js"></script>
+    <script src="GameObjects/Obstacle.js"></script>
+    <script src="GameObjects/Coin.js"></script>
+    <script src="GameObjects/Ball.js"></script>
     <script src="sketch.js"></script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/~xsith/gyro-test/service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
