@@ -1,0 +1,24 @@
+{
+    "name": "Ball Game",
+    "short_name": "Ball Game",
+    "description": "A ball rolling puzzle game",
+    "start_url": "/~xsith/gyro-test/",
+    "scope": "/~xsith/gyro-test/",
+    "display": "standalone",
+    "background_color": "#9dacff",
+    "theme_color": "#4c5eb3",
+    "icons": [
+        {
+            "src": "icons/icon_192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon_512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
