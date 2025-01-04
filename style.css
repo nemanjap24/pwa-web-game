@@ -111,6 +111,29 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+#rotate-overlay {
+  z-index: 1002; /* Higher than other overlays */
+}
+
+#rotate-overlay i {
+  margin: 20px;
+  animation: rotate 2s infinite linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hide rotate overlay by default */
+#rotate-overlay {
+  display: none;
+}
+
 @media screen and (max-width: 768px) {
   .overlay-content {
     padding: 15px;
