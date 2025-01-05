@@ -183,28 +183,47 @@ button:hover {
 }
 
 @media print {
+  /* Hide everything by default */
   body * {
     visibility: hidden;
   }
 
+  /* Hide all overlays except help */
   .overlay {
-    display: flex;
+    display: none !important;
   }
-  /* Show help content regardless of overlay state */
+
+  /* Show only help overlay */
+  #help-overlay {
+    display: flex !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  /* Make help overlay content visible */
+  #help-overlay .overlay-content {
+    visibility: visible;
+  }
+
+  #help-overlay .overlay-content * {
+    visibility: visible;
+  }
+
+  /* Hide the close button */
+  #close-help {
+    display: none;
+  }
+
+  /* Reset positioning for print */
   .overlay-content {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
+    padding: 20px;
   }
-
-  /* Make all help content children visible */
-  .overlay-content * {
-    visibility: visible !important;
-  }
-
-  /* Hide buttons when printing */
-  #close-help {
-    display: none;
+  .coin{
+    color: #917f2c;
   }
 }
