@@ -43,7 +43,7 @@ function preload() {
 if ($(window).width() < canvasSize + 120) {
   canvasSize = $(window).width() * 0.7;
 }
-if ($(window).height() < appHeight + 120) {
+if ($(window).height() < canvasSize + 120) {
   canvasSize = $(window).height() * 0.7;
 }
 
@@ -198,13 +198,6 @@ function handleKeyUp(event) {
   keys[event.key.toLowerCase()] = false;
 }
 
-// Responsive canvas resizing
-// function windowResized() {
-//   resizeCanvas(windowWidth, windowHeight);
-//   if (requestButton) {
-//     requestButton.position(width / 2 - 100, height / 2);
-//   }
-// }
 function checkOrientation() {
   const isPortrait = window.screen.orientation.type.includes("portrait");
   if (isMobile) {
@@ -279,10 +272,12 @@ function nextLevel() {
     if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
       unlockedDifficulties.push("medium");
       $("#unlocked-overlay-easy").css("display", "flex");
+      $("#btn-medium").show();
       noLoop();
     } else if (currentDifficulty === "medium" && !unlockedDifficulties.includes("hard")) {
       unlockedDifficulties.push("hard");
       $("#unlocked-overlay-medium").css("display", "flex");
+      $("#btn-hard").show();
       noLoop();
     }
   }
@@ -337,8 +332,24 @@ function loadRandomLevel(difficultyName) {
   // Load the chosen level
   loadLevel(difficultyName, chosenIndex);
 }
+function updateDifficultyButtons() {
+  loadUserData();
+  console.log(unlockedDifficulties);
+
+  if (unlockedDifficulties.includes("medium")) {
+    $("#btn-medium").show();
+  } else {
+    $("#btn-medium").hide();
+  }
+  if (unlockedDifficulties.includes("hard")) {
+    $("#btn-hard").show();
+  } else {
+    $("#btn-hard").hide();
+  }
+}
 
 $(document).ready(function () {
+  updateDifficultyButtons();
   $("#btn-easy").click(function () {
     if (unlockedDifficulties.includes("easy")) {
       currentDifficulty = "easy";
