@@ -245,16 +245,16 @@ function loadLevel(difficultyName, levelIndex) {
         let wall = new Wall(x, y, tileSize, tileSize, "#fff");
         CD.addWall(wall);
       } else if (levelData.map[i][j] === "c") {
-        console.log("Coin placed");
-        let coin = new Coin(x, y, tileSize * 0.3, 10);
+        // console.log("Coin placed");
+        let coin = new Coin(x, y, tileSize * 0.5, 10);
         CD.addCoin(coin);
       } else if (levelData.map[i][j] === "o") {
         CD.addObstacle(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
-        console.log("Obstacle placed");
+        // console.log("Obstacle placed");
       } else if (levelData.map[i][j] === "e") {
         // finishLine = new Finish(x, y, tileSize * 0.8);
         CD.setFinishLine(new Finish(x, y, tileSize * 0.8, () => nextLevel()));
-        console.log("Finish line placed");
+        // console.log("Finish line placed");
       }
     }
   }
@@ -279,6 +279,10 @@ function nextLevel() {
       $("#unlocked-overlay-medium").css("display", "flex");
       noLoop();
     }
+  }
+  if (currentDifficulty === "hard" && levelsCompleted.hard === 4) {
+    $("#congratulations-overlay").css("display", "flex");
+    noLoop();
   }
 
   // Load next random level in the current difficulty
@@ -305,7 +309,7 @@ function loadRandomLevel(difficultyName) {
     }
   }
   // todo: remove after, used for debugging
-  console.log(availableIndexes);
+  // console.log(availableIndexes);
 
   // If all levels used, reset
   if (availableIndexes.length === 0) {
