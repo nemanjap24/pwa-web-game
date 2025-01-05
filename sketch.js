@@ -78,17 +78,23 @@ function setup() {
 
   // Use jQuery for DOM manipulation
   $(document).ready(function () {
-    $("#next-level").click(nextLevel);
     $("#help-button").click(function () {
       $("#help-overlay").css("display", "flex");
-      // Pause the game
       noLoop();
     });
-
     $("#close-help").click(function () {
       $("#help-overlay").css("display", "none");
-      // Resume the game
       loop();
+    });
+    $("#reset-button").click(function () {
+      $("#reset-overlay").css("display", "flex");
+    });
+    $("#close-reset").click(function () {
+      $("#reset-overlay").css("display", "none");
+    });
+    $("#confirm-reset").click(function () {
+      localStorage.removeItem("gameData");
+      window.location.reload(true);
     });
     $("#close-unlocked-overlay-easy").click(function () {
       $("#unlocked-overlay-easy").css("display", "none");
