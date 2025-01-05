@@ -27,12 +27,11 @@
     <script src="libraries/p5.sound.min.js"></script>
     <script src="libraries/jquery-3.7.1.min.js"></script>
   </head>
-
   <body>
     <div id="main-container">
       <div id="canvas-container">
         <div id="controls">
-          <button id="next-level">Next Level</button>
+          <button id="reset-button">Reset</button>
           <button id="help-button">Help <i class="fa-solid fa-question"></i></button>
         </div>
       </div>
@@ -57,6 +56,15 @@
         <p>Collect all <span class="coin"> coins</span> 🪙 before reaching the finish line (black circle).</p>
         <p>Avoid <span class="obstacle">obstacles</span>(blue squares) - they will reset your position</p>
         <button id="close-help">Close</button>
+      </div>
+    </div>
+    <div id="reset-overlay" class="overlay">
+      <div class="overlay-content">
+        <h2>Lose all your progress?</h2>
+        <p>You are about to delete all your progress so far, and start all over again.</p>
+        <p>Are you sure you want to do that?</p>
+        <button id="confirm-reset">Confirm</button>
+        <button id="close-reset">Close</button>
       </div>
     </div>
     <div id="rotate-overlay" class="overlay">
