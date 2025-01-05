@@ -12,8 +12,6 @@ let requestButton;
 let isMobile;
 let coins = [];
 let canvasSize = 500;
-let appWidth = 620;
-let appHeight = 560;
 let CD;
 
 // todo: remove uneccessary code
@@ -40,10 +38,10 @@ function preload() {
   levelsData = loadJSON("levels.json");
 }
 
-if ($(window).width() < canvasSize + 120) {
-  canvasSize = $(window).width() * 0.7;
+if ($(window).width() < canvasSize) {
+  canvasSize = $(window).width() * 0.8;
 }
-if ($(window).height() < appHeight + 120) {
+if ($(window).height() < canvasSize) {
   canvasSize = $(window).height() * 0.7;
 }
 
@@ -88,18 +86,6 @@ function setup() {
     $("#close-help").click(function () {
       $("#help-overlay").css("display", "none");
       // Resume the game
-      loop();
-    });
-    $("#close-unlocked-overlay-easy").click(function () {
-      $("#unlocked-overlay-easy").css("display", "none");
-      loop();
-    });
-    $("#close-unlocked-overlay-medium").click(function () {
-      $("#unlocked-overlay-medium").css("display", "none");
-      loop();
-    });
-    $("#close-congratulations-overlay").click(function () {
-      $("#congratulations-overlay").css("display", "none");
       loop();
     });
   });
@@ -200,7 +186,7 @@ function handleKeyUp(event) {
 //   }
 // }
 function checkOrientation() {
-  const isPortrait = window.screen.orientation.type.includes("portrait");
+  const isPortrait = window.screen.orientation.type.includes('portrait');
   if (isMobile) {
     if (!isPortrait) {
       $("#rotate-overlay").css("display", "flex");
@@ -245,16 +231,16 @@ function loadLevel(difficultyName, levelIndex) {
         let wall = new Wall(x, y, tileSize, tileSize, "#fff");
         CD.addWall(wall);
       } else if (levelData.map[i][j] === "c") {
-        // console.log("Coin placed");
-        let coin = new Coin(x, y, tileSize * 0.5, 10);
+        console.log("Coin placed");
+        let coin = new Coin(x, y, tileSize * 0.3, 10);
         CD.addCoin(coin);
       } else if (levelData.map[i][j] === "o") {
         CD.addObstacle(new Obstacle(x, y, tileSize * 0.5, tileSize * 0.5));
-        // console.log("Obstacle placed");
+        console.log("Obstacle placed");
       } else if (levelData.map[i][j] === "e") {
         // finishLine = new Finish(x, y, tileSize * 0.8);
         CD.setFinishLine(new Finish(x, y, tileSize * 0.8, () => nextLevel()));
-        // console.log("Finish line placed");
+        console.log("Finish line placed");
       }
     }
   }
@@ -272,17 +258,9 @@ function nextLevel() {
   if (levelsCompleted[currentDifficulty] >= 3) {
     if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
       unlockedDifficulties.push("medium");
-      $("#unlocked-overlay-easy").css("display", "flex");
-      noLoop();
     } else if (currentDifficulty === "medium" && !unlockedDifficulties.includes("hard")) {
       unlockedDifficulties.push("hard");
-      $("#unlocked-overlay-medium").css("display", "flex");
-      noLoop();
     }
-  }
-  if (currentDifficulty === "hard" && levelsCompleted.hard === 4) {
-    $("#congratulations-overlay").css("display", "flex");
-    noLoop();
   }
 
   // Load next random level in the current difficulty
@@ -309,7 +287,7 @@ function loadRandomLevel(difficultyName) {
     }
   }
   // todo: remove after, used for debugging
-  // console.log(availableIndexes);
+  console.log(availableIndexes);
 
   // If all levels used, reset
   if (availableIndexes.length === 0) {
