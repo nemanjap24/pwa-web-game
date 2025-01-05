@@ -170,6 +170,9 @@ button:hover {
     padding: 10px 20px;
     font-size: 14px;
   }
+  #main-container {
+    flex-direction: column;
+  }
 }
 
 @media print {

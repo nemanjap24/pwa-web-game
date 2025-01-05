@@ -12,6 +12,8 @@ let requestButton;
 let isMobile;
 let coins = [];
 let canvasSize = 500;
+let appWidth = 620;
+let appHeight = 560;
 let CD;
 
 // todo: remove uneccessary code
@@ -38,10 +40,10 @@ function preload() {
   levelsData = loadJSON("levels.json");
 }
 
-if ($(window).width() < canvasSize) {
-  canvasSize = $(window).width() * 0.8;
+if ($(window).width() < canvasSize + 120) {
+  canvasSize = $(window).width() * 0.7;
 }
-if ($(window).height() < canvasSize) {
+if ($(window).height() < appHeight + 120) {
   canvasSize = $(window).height() * 0.7;
 }
 
@@ -86,6 +88,18 @@ function setup() {
     $("#close-help").click(function () {
       $("#help-overlay").css("display", "none");
       // Resume the game
+      loop();
+    });
+    $("#close-unlocked-overlay-easy").click(function () {
+      $("#unlocked-overlay-easy").css("display", "none");
+      loop();
+    });
+    $("#close-unlocked-overlay-medium").click(function () {
+      $("#unlocked-overlay-medium").css("display", "none");
+      loop();
+    });
+    $("#close-congratulations-overlay").click(function () {
+      $("#congratulations-overlay").css("display", "none");
       loop();
     });
   });
@@ -186,7 +200,7 @@ function handleKeyUp(event) {
 //   }
 // }
 function checkOrientation() {
-  const isPortrait = window.screen.orientation.type.includes('portrait');
+  const isPortrait = window.screen.orientation.type.includes("portrait");
   if (isMobile) {
     if (!isPortrait) {
       $("#rotate-overlay").css("display", "flex");
@@ -258,8 +272,12 @@ function nextLevel() {
   if (levelsCompleted[currentDifficulty] >= 3) {
     if (currentDifficulty === "easy" && !unlockedDifficulties.includes("medium")) {
       unlockedDifficulties.push("medium");
+      $("#unlocked-overlay-easy").css("display", "flex");
+      noLoop();
     } else if (currentDifficulty === "medium" && !unlockedDifficulties.includes("hard")) {
       unlockedDifficulties.push("hard");
+      $("#unlocked-overlay-medium").css("display", "flex");
+      noLoop();
     }
   }
 
