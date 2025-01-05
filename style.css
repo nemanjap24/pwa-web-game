@@ -93,9 +93,16 @@ canvas {
 }
 .ball {
   color: red;
+  font-weight: bold;
 }
 .obstacle {
   color: blue;
+  font-weight: bold;
+}
+.coin {
+  background-color: black;
+  color: yellow;
+  font-weight: bold;
 }
 
 button {
@@ -169,6 +176,9 @@ button:hover {
   #close-help {
     padding: 10px 20px;
     font-size: 14px;
+  }
+  #main-container {
+    flex-direction: column;
   }
 }
 
